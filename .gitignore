@@ -1,0 +1,62 @@
+# Built application files
+*.apk
+*.aab
+*.ap_
+
+# Gradle
+.gradle/
+build/
+*/build/
+local.properties
+.gradle-cache/
+
+# Kotlin
+*.class
+*.kotlin_module
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Navigation Safe Args
+.navigation/
+
+# Generated files
+generated/
+out/
+
+# Signing files
+*.jks
+*.keystore
+keystore.properties
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Firebase
+google-services.json
+GoogleService-Info.plist
+
+# KSP / KAPT
+.ksp/
+kapt/
+
+# Compose previews cache
+.compose/
+
+# Test outputs
+test-results/
+coverage/
+
+# Room schema export (optional)
+schemas/
+
+# Version catalog backup
+libs.versions.toml.bak
