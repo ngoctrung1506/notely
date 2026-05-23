@@ -5,7 +5,7 @@ import java.util.Date
 import java.util.Locale
 
 object DateUtil {
-    private val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    private val dateFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
 
     fun getCurrentTime(): Long = System.currentTimeMillis()
 

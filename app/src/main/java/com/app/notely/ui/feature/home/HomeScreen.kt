@@ -1,0 +1,196 @@
+package com.app.notely.ui.feature.home
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.PermanentDrawerSheet
+import androidx.compose.material3.PermanentNavigationDrawer
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
+import com.app.notely.domain.model.Note
+import com.app.notely.ui.component.EmptyView
+import com.app.notely.ui.feature.home.component.HomeDrawerContent
+import com.app.notely.ui.feature.home.component.HomeTopAppBar
+import com.app.notely.ui.feature.home.component.NoteCard
+import kotlinx.coroutines.launch
+
+enum class HomeNavItem { Home, Tags }
+
+
+@Preview(showSystemUi = true)
+@Composable
+fun HomeScreen(
+    windowWidthSizeClass: WindowWidthSizeClass,
+    navController: NavHostController,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val lazyPagingItems = viewModel.pagedNotes.collectAsLazyPagingItems()
+    val columns = when (windowWidthSizeClass) {
+        WindowWidthSizeClass.Compact -> 1
+        WindowWidthSizeClass.Medium -> 2
+        else -> 3
+    }
+    val isCompact = windowWidthSizeClass == WindowWidthSizeClass.Compact
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    var selectedNavItem by remember { mutableStateOf(HomeNavItem.Home) }
+
+    if (isCompact) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet {
+                    HomeDrawerContent(
+                        selectedItem = selectedNavItem,
+                        onItemSelected = {
+                            selectedNavItem = it
+                            scope.launch { drawerState.close() }
+                        }
+                    )
+                }
+            }
+        ) {
+            HomeMainContent(
+                columns = columns,
+                lazyPagingItems = lazyPagingItems,
+                showMenuIcon = true,
+                onMenuClick = { scope.launch { drawerState.open() } },
+                onCreateNote = { /* TODO: navigate to create note */ },
+                onNoteClick = { /* TODO: navigate to note detail */ }
+            )
+        }
+    } else {
+        PermanentNavigationDrawer(
+            drawerContent = {
+                PermanentDrawerSheet(modifier = Modifier.width(280.dp)) {
+                    HomeDrawerContent(
+                        selectedItem = selectedNavItem,
+                        onItemSelected = { selectedNavItem = it }
+                    )
+                }
+            }
+        ) {
+            HomeMainContent(
+                columns = columns,
+                lazyPagingItems = lazyPagingItems,
+                showMenuIcon = false,
+                onMenuClick = {},
+                onCreateNote = { /* TODO: navigate to create note */ },
+                onNoteClick = { /* TODO: navigate to note detail */ }
+            )
+        }
+    }
+}
+
+
+@Composable
+private fun HomeMainContent(
+    columns: Int,
+    lazyPagingItems: LazyPagingItems<Note>,
+    showMenuIcon: Boolean,
+    onMenuClick: () -> Unit,
+    onCreateNote: () -> Unit,
+    onNoteClick: (Long) -> Unit
+) {
+    Scaffold(
+        topBar = {
+            HomeTopAppBar(
+                showMenuIcon = showMenuIcon,
+                onMenuClick = onMenuClick
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onCreateNote,
+                shape = RoundedCornerShape(16.dp),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "New Note")
+            }
+        }
+    ) { paddingValues ->
+        val isEmptyAndLoaded = lazyPagingItems.itemCount == 0 &&
+                lazyPagingItems.loadState.refresh is LoadState.NotLoading
+
+        if (isEmptyAndLoaded) {
+            EmptyView(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                message = "No notes yet. Tap + to create one!"
+            )
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(columns),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = paddingValues.calculateTopPadding() + 16.dp,
+                    bottom = paddingValues.calculateBottomPadding() + 88.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(
+                    count = lazyPagingItems.itemCount,
+                    key = lazyPagingItems.itemKey { it.id }
+                ) { index ->
+                    lazyPagingItems[index]?.let { note ->
+                        NoteCard(note = note, onClick = { onNoteClick(note.id) })
+                    }
+                }
+
+                if (lazyPagingItems.loadState.append is LoadState.Loading) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
