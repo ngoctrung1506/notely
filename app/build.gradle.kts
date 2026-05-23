@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
-
 }
 
 android {
@@ -50,6 +49,8 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.androidx.paging.compose)
+    implementation(libs.androidx.paging.common)
     ksp(libs.room.compiler)
     
     // Hilt
@@ -62,7 +63,16 @@ dependencies {
     
     // DataStore
     implementation(libs.datastore.preferences)
-    
+
+    // Paging3
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.compose)
+    implementation(libs.room.paging)
+
+    // WindowSizeClass + Extended Icons
+    implementation(libs.material3.window.size)
+    implementation(libs.material.icons.extended)
+
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

@@ -1,5 +1,6 @@
 package com.app.notely.data.local.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -12,5 +13,8 @@ import kotlinx.coroutines.flow.Flow
 interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY updatedAt DESC")
     fun getAllNotes(): Flow<List<NoteEntity>>
+
+    @Query("SELECT * FROM notes ORDER BY updatedAt DESC")
+    fun getPagedNotes(): PagingSource<Int, NoteEntity>
 
 }
