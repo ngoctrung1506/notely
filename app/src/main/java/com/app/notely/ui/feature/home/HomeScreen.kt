@@ -43,6 +43,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.app.notely.R
+import com.app.notely.core.navigation.Screen
 import com.app.notely.domain.model.Note
 import com.app.notely.ui.component.EmptyView
 import com.app.notely.ui.feature.home.component.HomeDrawerContent
@@ -91,8 +92,8 @@ fun HomeScreen(
                 lazyPagingItems = lazyPagingItems,
                 showMenuIcon = true,
                 onMenuClick = { scope.launch { drawerState.open() } },
-                onCreateNote = { /* TODO: navigate to create note */ },
-                onNoteClick = { /* TODO: navigate to note detail */ }
+                onCreateNote = { navController.navigate(Screen.NoteEditor.createRoute()) },
+                onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) }
             )
         }
     } else {
@@ -111,8 +112,8 @@ fun HomeScreen(
                 lazyPagingItems = lazyPagingItems,
                 showMenuIcon = false,
                 onMenuClick = {},
-                onCreateNote = { /* TODO: navigate to create note */ },
-                onNoteClick = { /* TODO: navigate to note detail */ }
+                onCreateNote = { navController.navigate(Screen.NoteEditor.createRoute()) },
+                onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) }
             )
         }
     }
