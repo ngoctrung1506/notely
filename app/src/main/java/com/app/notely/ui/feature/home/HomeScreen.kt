@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,6 +42,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.app.notely.R
 import com.app.notely.domain.model.Note
 import com.app.notely.ui.component.EmptyView
 import com.app.notely.ui.feature.home.component.HomeDrawerContent
@@ -140,7 +142,7 @@ private fun HomeMainContent(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
-                Icon(Icons.Filled.Add, contentDescription = "New Note")
+                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.home_new_note_label))
             }
         }
     ) { paddingValues ->
@@ -152,7 +154,7 @@ private fun HomeMainContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
-                message = "No notes yet. Tap + to create one!"
+                message = stringResource(R.string.home_empty_message)
             )
         } else {
             LazyVerticalGrid(
