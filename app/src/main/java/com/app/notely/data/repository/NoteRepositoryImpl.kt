@@ -15,7 +15,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-private const val PAGE_SIZE = 20
+private const val BASE_PAGE_SIZE = 20
+private const val BASE_INITIAL_LOAD_SIZE = 40
+private const val BASE_PREFETCH_DISTANCE = 5
+
+private fun pagingConfig(columns: Int) = PagingConfig(
+    pageSize = BASE_PAGE_SIZE * columns,
+    initialLoadSize = BASE_INITIAL_LOAD_SIZE * columns,
+    prefetchDistance = BASE_PREFETCH_DISTANCE * columns,
+    enablePlaceholders = false
+)
 
 class NoteRepositoryImpl @Inject constructor(
     private val noteDao: NoteDao,
@@ -24,21 +33,21 @@ class NoteRepositoryImpl @Inject constructor(
 ) : NoteRepository {
 
     override fun getPagedNotes(): Flow<PagingData<Note>> = Pager(
-        config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+        config = pagingConfig(columns = 1),
         pagingSourceFactory = { noteDao.getPagedNotes() }
     ).flow.map { pagingData ->
         pagingData.map { it.toNote() }
     }
 
-    override fun getPagedNotesByUpdatedAt(query: String): Flow<PagingData<Note>> = Pager(
-        config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+    override fun getPagedNotesByUpdatedAt(query: String, columns: Int): Flow<PagingData<Note>> = Pager(
+        config = pagingConfig(columns),
         pagingSourceFactory = { noteDao.searchPagedNotesByUpdatedAt(query) }
     ).flow.map { pagingData ->
         pagingData.map { it.toNote() }
     }
 
-    override fun getPagedNotesByCreatedAt(query: String): Flow<PagingData<Note>> = Pager(
-        config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+    override fun getPagedNotesByCreatedAt(query: String, columns: Int): Flow<PagingData<Note>> = Pager(
+        config = pagingConfig(columns),
         pagingSourceFactory = { noteDao.searchPagedNotesByCreatedAt(query) }
     ).flow.map { pagingData ->
         pagingData.map { it.toNote() }
@@ -79,8 +88,10 @@ class NoteRepositoryImpl @Inject constructor(
                     firestoreDataSource.deleteNote(localEntity.id)
                     noteDao.deleteNote(localEntity.id)
                 }
+
                 else -> {
-                    val remoteEntity = runCatching { firestoreDataSource.getNote(localEntity.id) }.getOrNull()
+                    val remoteEntity =
+                        runCatching { firestoreDataSource.getNote(localEntity.id) }.getOrNull()
                     if (remoteEntity == null || localEntity.updatedAt >= remoteEntity.updatedAt) {
                         firestoreDataSource.upsertNote(localEntity)
                         noteDao.updateNote(localEntity.copy(pendingSync = false))

@@ -44,6 +44,8 @@ class HomeViewModel @Inject constructor(
     private val _sortBy = MutableStateFlow(SortBy.UpdatedDate)
     val sortBy: StateFlow<SortBy> = _sortBy.asStateFlow()
 
+    private val _columns = MutableStateFlow(1)
+
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
     val syncStatus: StateFlow<SyncStatus> = _syncStatus.asStateFlow()
 
@@ -52,13 +54,14 @@ class HomeViewModel @Inject constructor(
 
     val pagedNotes: Flow<PagingData<Note>> = combine(
         _searchQuery.debounce(200L),
-        _sortBy
-    ) { query, sort -> query to sort }
+        _sortBy,
+        _columns
+    ) { query, sort, cols -> Triple(query, sort, cols) }
         .distinctUntilChanged()
-        .flatMapLatest { (query, sort) ->
+        .flatMapLatest { (query, sort, cols) ->
             when (sort) {
-                SortBy.UpdatedDate -> noteRepository.getPagedNotesByUpdatedAt(query)
-                SortBy.CreatedDate -> noteRepository.getPagedNotesByCreatedAt(query)
+                SortBy.UpdatedDate -> noteRepository.getPagedNotesByUpdatedAt(query, cols)
+                SortBy.CreatedDate -> noteRepository.getPagedNotesByCreatedAt(query, cols)
             }
         }
         .cachedIn(viewModelScope)
@@ -100,6 +103,10 @@ class HomeViewModel @Inject constructor(
 
     fun onSortByChanged(sort: SortBy) {
         _sortBy.value = sort
+    }
+
+    fun setColumns(columns: Int) {
+        _columns.value = columns
     }
 
     fun deleteNote(noteId: Long) {

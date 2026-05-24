@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
     fun getPagedNotes(): Flow<PagingData<Note>>
-    fun getPagedNotesByUpdatedAt(query: String): Flow<PagingData<Note>>
-    fun getPagedNotesByCreatedAt(query: String): Flow<PagingData<Note>>
+    fun getPagedNotesByUpdatedAt(query: String, columns: Int = 1): Flow<PagingData<Note>>
+    fun getPagedNotesByCreatedAt(query: String, columns: Int = 1): Flow<PagingData<Note>>
     suspend fun getNoteById(id: Long): Note?
     suspend fun saveNote(note: Note): Long
     suspend fun updateNote(note: Note)
