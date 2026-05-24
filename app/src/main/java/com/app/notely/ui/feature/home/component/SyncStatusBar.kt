@@ -146,12 +146,5 @@ fun SyncStatusBar(
     }
 }
 
-private fun formatSyncTime(timestamp: Long): String {
-    val now = System.currentTimeMillis()
-    val diffMs = now - timestamp
-    return when {
-        diffMs < 60_000 -> "just now"
-        diffMs < 3_600_000 -> "${diffMs / 60_000}m ago"
-        else -> SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
-    }
-}
+private fun formatSyncTime(timestamp: Long): String =
+    SimpleDateFormat("MM/dd, HH:mm", Locale.US).format(Date(timestamp))

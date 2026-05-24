@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.app.notely.core.network.ConnectivityService
+import com.app.notely.data.local.preferences.SyncPreferences
 import com.app.notely.domain.model.Note
 import com.app.notely.domain.model.SyncStatus
 import com.app.notely.domain.repository.NoteRepository
@@ -33,6 +34,7 @@ enum class SortBy {
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
+    private val syncPreferences: SyncPreferences,
     connectivityService: ConnectivityService
 ) : ViewModel() {
 
@@ -81,7 +83,12 @@ class HomeViewModel @Inject constructor(
                 if (_syncStatus.value !is SyncStatus.Syncing &&
                     _syncStatus.value !is SyncStatus.NetworkOffline
                 ) {
-                    _syncStatus.value = if (hasPending) SyncStatus.PendingSync else SyncStatus.Idle
+                    if (hasPending) {
+                        _syncStatus.value = SyncStatus.PendingSync
+                    } else {
+                        val lastSyncedAt = syncPreferences.getLastSyncedAt()
+                        _syncStatus.value = if (lastSyncedAt > 0) SyncStatus.Success(lastSyncedAt) else SyncStatus.Idle
+                    }
                 }
             }
             .launchIn(viewModelScope)
@@ -109,7 +116,8 @@ class HomeViewModel @Inject constructor(
             _syncStatus.value = SyncStatus.Syncing
             val result = noteRepository.syncNotes()
             _syncStatus.value = if (result.isSuccess) {
-                SyncStatus.Success(System.currentTimeMillis())
+                val lastSyncedAt = syncPreferences.getLastSyncedAt()
+                SyncStatus.Success(lastSyncedAt)
             } else {
                 SyncStatus.Error(result.exceptionOrNull()?.message ?: "Sync failed")
             }
