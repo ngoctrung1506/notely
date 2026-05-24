@@ -8,6 +8,8 @@
     <string name="home_open_menu">Open menu</string>
     <string name="home_sort_options">Sort options</string>
     <string name="home_search_placeholder">Search your thoughts...</string>
+    <string name="sort_by_updated_date">Updated Date</string>
+    <string name="sort_by_created_date">Created Date</string>
 
     <!-- Drawer -->
     <string name="drawer_home">Home</string>
