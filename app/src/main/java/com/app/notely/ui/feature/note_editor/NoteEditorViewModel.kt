@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.notely.core.util.DateUtil
+import com.app.notely.core.mock.MockTags
 import com.app.notely.domain.model.Note
 import com.app.notely.domain.repository.NoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,6 +53,7 @@ class NoteEditorViewModel @Inject constructor(
                         content = note.content,
                         color = note.color,
                         createdAt = note.createdAt,
+                        tags = note.tags.mapNotNull { name -> MockTags.all.find { it.name == name } },
                         isLoading = false
                     )
                 }
@@ -65,6 +67,15 @@ class NoteEditorViewModel @Inject constructor(
         when (event) {
             is NoteEditorUiEvent.TitleChanged -> _uiState.update { it.copy(title = event.title) }
             is NoteEditorUiEvent.ContentChanged -> _uiState.update { it.copy(content = event.content) }
+            is NoteEditorUiEvent.TagToggled -> {
+                val current = _uiState.value.tags
+                val newTags = if (current.any { it.id == event.tag.id }) {
+                    current.filterNot { it.id == event.tag.id }
+                } else {
+                    current + event.tag
+                }
+                _uiState.update { it.copy(tags = newTags) }
+            }
             is NoteEditorUiEvent.Save -> saveNote()
         }
     }
@@ -89,7 +100,8 @@ class NoteEditorViewModel @Inject constructor(
                         content = state.content,
                         color = state.color,
                         createdAt = state.createdAt,
-                        updatedAt = now
+                        updatedAt = now,
+                        tags = state.tags.map { it.name }
                     )
                 )
             } else {
@@ -99,7 +111,8 @@ class NoteEditorViewModel @Inject constructor(
                         content = state.content,
                         color = state.color,
                         createdAt = now,
-                        updatedAt = now
+                        updatedAt = now,
+                        tags = state.tags.map { it.name }
                     )
                 )
             }

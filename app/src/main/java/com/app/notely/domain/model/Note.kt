@@ -6,5 +6,6 @@ data class Note(
     val content: String,
     val createdAt: Long,
     val updatedAt: Long,
-    val color: String = "#FFFFFF"
+    val color: String = "#FFFFFF",
+    val tags: List<String> = emptyList()
 )

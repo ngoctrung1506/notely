@@ -9,7 +9,8 @@ fun NoteEntity.toNote(): Note = Note(
     content = content,
     createdAt = createdAt,
     updatedAt = updatedAt,
-    color = color
+    color = color,
+    tags = if (tags.isBlank()) emptyList() else tags.split(",")
 )
 
 fun Note.toNoteEntity(): NoteEntity = NoteEntity(
@@ -18,5 +19,6 @@ fun Note.toNoteEntity(): NoteEntity = NoteEntity(
     content = content,
     createdAt = createdAt,
     updatedAt = updatedAt,
-    color = color
+    color = color,
+    tags = tags.joinToString(",")
 )

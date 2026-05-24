@@ -10,4 +10,5 @@ sealed class Screen(val route: String) {
         const val ROUTE_WITH_ARGS = "note_editor?noteId={noteId}"
         fun createRoute(noteId: Long = 0L) = "note_editor?noteId=$noteId"
     }
+    object Tags : Screen("tags")
 }

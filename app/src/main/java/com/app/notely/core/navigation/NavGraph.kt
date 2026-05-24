@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.app.notely.ui.feature.note_editor.NoteEditorScreen
 import com.app.notely.ui.feature.home.HomeScreen
+import com.app.notely.ui.feature.tags.TagsScreen
 import com.app.notely.core.navigation.Screen
 
 
@@ -32,6 +33,13 @@ fun NavGraphBuilder.noteNavGraph(
         )
     ) {
         NoteEditorScreen(
+            windowWidthSizeClass = windowWidthSizeClass,
+            onNavigateBack = { navController.popBackStack() }
+        )
+    }
+
+    composable(Screen.Tags.route) {
+        TagsScreen(
             windowWidthSizeClass = windowWidthSizeClass,
             onNavigateBack = { navController.popBackStack() }
         )
