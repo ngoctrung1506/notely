@@ -18,14 +18,24 @@ private const val PAGE_SIZE = 20
 class NoteRepositoryImpl @Inject constructor(
     private val noteDao: NoteDao
 ) : NoteRepository {
-    override fun getAllNotes(): Flow<List<Note>> =
-        noteDao.getAllNotes().map { entities ->
-            entities.map { it.toNote() }
-        }
 
     override fun getPagedNotes(): Flow<PagingData<Note>> = Pager(
         config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
         pagingSourceFactory = { noteDao.getPagedNotes() }
+    ).flow.map { pagingData ->
+        pagingData.map { it.toNote() }
+    }
+
+    override fun getPagedNotesByUpdatedAt(query: String): Flow<PagingData<Note>> = Pager(
+        config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+        pagingSourceFactory = { noteDao.searchPagedNotesByUpdatedAt(query) }
+    ).flow.map { pagingData ->
+        pagingData.map { it.toNote() }
+    }
+
+    override fun getPagedNotesByCreatedAt(query: String): Flow<PagingData<Note>> = Pager(
+        config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+        pagingSourceFactory = { noteDao.searchPagedNotesByCreatedAt(query) }
     ).flow.map { pagingData ->
         pagingData.map { it.toNote() }
     }

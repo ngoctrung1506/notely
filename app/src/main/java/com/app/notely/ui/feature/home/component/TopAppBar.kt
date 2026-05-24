@@ -35,23 +35,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.app.notely.R
-
-enum class SortBy {
-    CreatedDate,
-    UpdatedDate
-}
+import com.app.notely.ui.feature.home.SortBy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopAppBar(
     showMenuIcon: Boolean,
     onMenuClick: () -> Unit,
-    onSortChanged: (SortBy) -> Unit = {},
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
+    sortBy: SortBy,
+    onSortByChanged: (SortBy) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var searchQuery by remember { mutableStateOf("") }
     var sortDropdownExpanded by remember { mutableStateOf(false) }
-    var selectedSort by remember { mutableStateOf(SortBy.UpdatedDate) }
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -79,13 +76,13 @@ fun HomeTopAppBar(
 
             OutlinedTextField(
                 value = searchQuery,
-                onValueChange = { searchQuery = it },
+                onValueChange = onSearchQueryChanged,
                 modifier = Modifier
                     .weight(1f)
                     .height(52.dp),
                 placeholder = {
                     Text(
-                        "Search your thoughts...",
+                        stringResource(R.string.home_search_placeholder),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -111,8 +108,11 @@ fun HomeTopAppBar(
                 IconButton(onClick = { sortDropdownExpanded = true }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.Sort,
-                        contentDescription = "Sort options",
-                        tint = MaterialTheme.colorScheme.primary
+                        contentDescription = stringResource(R.string.home_sort_options),
+                        tint = if (sortBy == SortBy.CreatedDate)
+                            MaterialTheme.colorScheme.primary
+                        else
+                            MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 DropdownMenu(
@@ -120,18 +120,32 @@ fun HomeTopAppBar(
                     onDismissRequest = { sortDropdownExpanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Created Date") },
+                        text = {
+                            Text(
+                                stringResource(R.string.sort_by_updated_date),
+                                color = if (sortBy == SortBy.UpdatedDate)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurface
+                            )
+                        },
                         onClick = {
-                            selectedSort = SortBy.CreatedDate
-                            onSortChanged(SortBy.CreatedDate)
+                            onSortByChanged(SortBy.UpdatedDate)
                             sortDropdownExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Updated Date") },
+                        text = {
+                            Text(
+                                stringResource(R.string.sort_by_created_date),
+                                color = if (sortBy == SortBy.CreatedDate)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onSurface
+                            )
+                        },
                         onClick = {
-                            selectedSort = SortBy.UpdatedDate
-                            onSortChanged(SortBy.UpdatedDate)
+                            onSortByChanged(SortBy.CreatedDate)
                             sortDropdownExpanded = false
                         }
                     )

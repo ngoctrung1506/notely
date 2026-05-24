@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,6 +63,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val lazyPagingItems = viewModel.pagedNotes.collectAsLazyPagingItems()
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val sortBy by viewModel.sortBy.collectAsState()
     val columns = when (windowWidthSizeClass) {
         WindowWidthSizeClass.Compact -> 1
         WindowWidthSizeClass.Medium -> 2
@@ -94,7 +97,11 @@ fun HomeScreen(
                 onMenuClick = { scope.launch { drawerState.open() } },
                 onCreateNote = { navController.navigate(Screen.NoteEditor.createRoute()) },
                 onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) },
-                onDeleteNote = { viewModel.deleteNote(it) }
+                onDeleteNote = { viewModel.deleteNote(it) },
+                searchQuery = searchQuery,
+                onSearchQueryChanged = { viewModel.onSearchQueryChanged(it) },
+                sortBy = sortBy,
+                onSortByChanged = { viewModel.onSortByChanged(it) }
             )
         }
     } else {
@@ -115,7 +122,11 @@ fun HomeScreen(
                 onMenuClick = {},
                 onCreateNote = { navController.navigate(Screen.NoteEditor.createRoute()) },
                 onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) },
-                onDeleteNote = { viewModel.deleteNote(it) }
+                onDeleteNote = { viewModel.deleteNote(it) },
+                searchQuery = searchQuery,
+                onSearchQueryChanged = { viewModel.onSearchQueryChanged(it) },
+                sortBy = sortBy,
+                onSortByChanged = { viewModel.onSortByChanged(it) }
             )
         }
     }
@@ -130,13 +141,21 @@ private fun HomeMainContent(
     onMenuClick: () -> Unit,
     onCreateNote: () -> Unit,
     onNoteClick: (Long) -> Unit,
-    onDeleteNote: (Long) -> Unit
+    onDeleteNote: (Long) -> Unit,
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
+    sortBy: SortBy,
+    onSortByChanged: (SortBy) -> Unit
 ) {
     Scaffold(
         topBar = {
             HomeTopAppBar(
                 showMenuIcon = showMenuIcon,
-                onMenuClick = onMenuClick
+                onMenuClick = onMenuClick,
+                searchQuery = searchQuery,
+                onSearchQueryChanged = onSearchQueryChanged,
+                sortBy = sortBy,
+                onSortByChanged = onSortByChanged
             )
         },
         floatingActionButton = {
