@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Notely</string>
-    
+
     <!-- Home Screen -->
     <string name="home_empty_message">No notes yet. Jot down right now!</string>
     <string name="home_notes_title">Notes</string>
@@ -12,4 +12,15 @@
     <!-- Drawer -->
     <string name="drawer_home">Home</string>
     <string name="drawer_tags">Tags</string>
+
+    <!-- Add/Edit Note Screen -->
+    <string name="add_note_title">Add note</string>
+    <string name="edit_note_title">Edit note</string>
+    <string name="note_title_placeholder">Note Title</string>
+    <string name="note_content_placeholder">Start writing your thoughts here...</string>
+    <string name="note_content_mobile_placeholder">Start writing your thoughts here...</string>
+    <string name="done_button">Done</string>
+    <string name="back_button">Back</string>
+    <string name="created_label">CREATED</string>
+    <string name="min_read_label">MIN READ</string>
 </resources>

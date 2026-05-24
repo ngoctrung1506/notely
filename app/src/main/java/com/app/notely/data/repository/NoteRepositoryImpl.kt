@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import com.app.notely.data.local.dao.NoteDao
 import com.app.notely.data.local.mapper.toNote
+import com.app.notely.data.local.mapper.toNoteEntity
 import com.app.notely.domain.model.Note
 import com.app.notely.domain.repository.NoteRepository
 import kotlinx.coroutines.flow.Flow
@@ -29,4 +30,13 @@ class NoteRepositoryImpl @Inject constructor(
         pagingData.map { it.toNote() }
     }
 
+    override suspend fun getNoteById(id: Long): Note? =
+        noteDao.getNoteById(id)?.toNote()
+
+    override suspend fun saveNote(note: Note): Long =
+        noteDao.insertNote(note.toNoteEntity())
+
+    override suspend fun updateNote(note: Note) {
+        noteDao.updateNote(note.toNoteEntity())
+    }
 }
