@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.app.notely.R
+import com.app.notely.core.mock.MockTags
 import com.app.notely.core.util.DateUtil
 import com.app.notely.domain.model.Note
 import com.app.notely.ui.theme.Black
@@ -50,6 +53,7 @@ fun NoteCard(
     val backgroundColor = Color(note.color.toColorInt())
     val showDeleteDialog = remember { mutableStateOf(false) }
     val swipeOffset = remember { mutableStateOf(0f) }
+    val tags = remember(note.tags) { note.tags.mapNotNull { name -> MockTags.all.find { it.name == name } } }
 
     Box(modifier = modifier.fillMaxWidth()) {
         // Delete action background — shown behind the sliding card
@@ -128,6 +132,25 @@ fun NoteCard(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
+                    }
+
+                    if (tags.isNotEmpty()) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            tags.forEach { tag ->
+                                val tagColor = Color(tag.color.toColorInt())
+                                Surface(
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = tagColor.copy(alpha = 0.12f)
+                                ) {
+                                    Text(
+                                        text = tag.name,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = tagColor,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     HorizontalDivider(

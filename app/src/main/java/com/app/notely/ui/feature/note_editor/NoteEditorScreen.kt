@@ -47,6 +47,7 @@ import com.app.notely.ui.feature.note_editor.component.DoneButton
 import com.app.notely.ui.feature.note_editor.component.MetadataRow
 import com.app.notely.ui.feature.note_editor.component.NoteEditorField
 import com.app.notely.ui.feature.note_editor.component.NoteEditorTopBar
+import com.app.notely.ui.feature.note_editor.component.TagSelectorRow
 import com.app.notely.ui.theme.Black
 
 @Composable
@@ -174,6 +175,19 @@ private fun MobileNoteEditorLayout(
                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
                 thickness = 0.5.dp
             )
+            Spacer(Modifier.height(12.dp))
+
+            TagSelectorRow(
+                selectedTags = uiState.tags,
+                onTagToggle = { onEvent(NoteEditorUiEvent.TagToggled(it)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                thickness = 0.5.dp
+            )
             Spacer(Modifier.height(16.dp))
 
             // Body
@@ -250,6 +264,19 @@ private fun TabletNoteEditorLayout(
                 )
 
                 Spacer(Modifier.height(16.dp))
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+                    thickness = 0.5.dp
+                )
+                Spacer(Modifier.height(12.dp))
+
+                TagSelectorRow(
+                    selectedTags = uiState.tags,
+                    onTagToggle = { onEvent(NoteEditorUiEvent.TagToggled(it)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(Modifier.height(12.dp))
                 HorizontalDivider(
                     color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
                     thickness = 0.5.dp

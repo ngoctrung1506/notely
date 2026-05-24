@@ -82,9 +82,12 @@ fun HomeScreen(
                 ModalDrawerSheet {
                     HomeDrawerContent(
                         selectedItem = selectedNavItem,
-                        onItemSelected = {
-                            selectedNavItem = it
+                        onItemSelected = { item ->
+                            selectedNavItem = item
                             scope.launch { drawerState.close() }
+                            if (item == HomeNavItem.Tags) {
+                                navController.navigate(Screen.Tags.route)
+                            }
                         }
                     )
                 }
@@ -110,7 +113,12 @@ fun HomeScreen(
                 PermanentDrawerSheet(modifier = Modifier.width(280.dp)) {
                     HomeDrawerContent(
                         selectedItem = selectedNavItem,
-                        onItemSelected = { selectedNavItem = it }
+                        onItemSelected = { item ->
+                            selectedNavItem = item
+                            if (item == HomeNavItem.Tags) {
+                                navController.navigate(Screen.Tags.route)
+                            }
+                        }
                     )
                 }
             }

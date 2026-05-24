@@ -31,4 +31,20 @@
     <string name="back_button">Back</string>
     <string name="created_label">CREATED</string>
     <string name="min_read_label">MIN READ</string>
+
+    <!-- Tags Screen -->
+    <string name="tags_screen_title">Manage Tags</string>
+    <string name="tags_create_new_placeholder">Create new tag…</string>
+    <string name="tags_create_button">Create Tag</string>
+    <string name="tags_create_section_label">Create New Tag</string>
+    <string name="tags_help_text">Currently, users can only choose from existing tags. Custom tags are coming soon.</string>
+    <string name="tags_existing_section">Existing Tags</string>
+    <string name="tags_empty_description">Organize your thoughts with\nsystematic categorization.</string>
+    <string name="tags_count">%d Tags</string>
+    <string name="tags_insights_title">Tag Insights</string>
+    <string name="tags_insights_body">Your most used tag is %s with notes linked this month.</string>
+    <string name="tags_tip_title">Organization Tip</string>
+    <string name="tags_tip_body">Use color-coded tags to visually prioritize your workflow at a single glance.</string>
+    <string name="tags_add_label">Add tag…</string>
+    <string name="tag_remove">Remove %s</string>
 </resources>
