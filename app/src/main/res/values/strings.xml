@@ -13,6 +13,12 @@
     <string name="drawer_home">Home</string>
     <string name="drawer_tags">Tags</string>
 
+    <!-- Delete Dialog -->
+    <string name="delete_note_title">Delete Note</string>
+    <string name="delete_note_message">Are you sure you want to delete this note? This action cannot be undone.</string>
+    <string name="delete_button">Delete</string>
+    <string name="cancel_button">Cancel</string>
+
     <!-- Add/Edit Note Screen -->
     <string name="add_note_title">Add note</string>
     <string name="edit_note_title">Edit note</string>

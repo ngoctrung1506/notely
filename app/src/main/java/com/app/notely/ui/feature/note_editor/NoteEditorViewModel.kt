@@ -69,6 +69,12 @@ class NoteEditorViewModel @Inject constructor(
         }
     }
 
+    fun deleteNote(noteId: Long) {
+        viewModelScope.launch {
+            noteRepository.deleteNote(noteId)
+        }
+    }
+
     private fun saveNote() {
         val state = _uiState.value
         if (state.title.isBlank() && state.content.isBlank()) return

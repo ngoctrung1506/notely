@@ -10,4 +10,5 @@ interface NoteRepository {
     suspend fun getNoteById(id: Long): Note?
     suspend fun saveNote(note: Note): Long
     suspend fun updateNote(note: Note)
+    suspend fun deleteNote(noteId: Long)
 }
