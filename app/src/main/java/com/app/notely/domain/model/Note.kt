@@ -7,5 +7,7 @@ data class Note(
     val createdAt: Long,
     val updatedAt: Long,
     val color: String = "#FFFFFF",
-    val tags: List<String> = emptyList()
+    val tags: List<String> = emptyList(),
+    val pendingSync: Boolean = true,
+    val isDeleted: Boolean = false
 )

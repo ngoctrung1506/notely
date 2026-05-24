@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -72,6 +73,10 @@ dependencies {
     // WindowSizeClass + Extended Icons
     implementation(libs.material3.window.size)
     implementation(libs.material.icons.extended)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
 
     // Testing
     testImplementation(libs.junit)

@@ -12,4 +12,6 @@ interface NoteRepository {
     suspend fun saveNote(note: Note): Long
     suspend fun updateNote(note: Note)
     suspend fun deleteNote(noteId: Long)
+    fun hasPendingSync(): Flow<Boolean>
+    suspend fun syncNotes(): Result<Unit>
 }
