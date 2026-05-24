@@ -147,4 +147,4 @@ fun SyncStatusBar(
 }
 
 private fun formatSyncTime(timestamp: Long): String =
-    SimpleDateFormat("MM/dd, HH:mm", Locale.US).format(Date(timestamp))
+    SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.US).format(Date(timestamp))
