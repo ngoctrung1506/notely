@@ -17,17 +17,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.app.notely.R
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.app.notely.ui.feature.note_editor.component.DoneButton
 import com.app.notely.ui.feature.note_editor.component.MetadataRow
 import com.app.notely.ui.feature.note_editor.component.NoteEditorField
+import com.app.notely.ui.feature.note_editor.component.NoteEditorTopBar
 import com.app.notely.ui.theme.Black
 
 @Composable
@@ -49,6 +56,7 @@ fun NoteEditorScreen(
     viewModel: NoteEditorViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val (showDeleteDialog, setShowDeleteDialog) = remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.isSaved) {
         if (uiState.isSaved) onNavigateBack()
@@ -67,14 +75,42 @@ fun NoteEditorScreen(
             uiState = uiState,
             cardColor = cardColor,
             onEvent = viewModel::onEvent,
-            onNavigateBack = onNavigateBack
+            onNavigateBack = onNavigateBack,
+            onShowDeleteDialog = { setShowDeleteDialog(true) }
         )
     } else {
         MobileNoteEditorLayout(
             uiState = uiState,
             cardColor = cardColor,
             onEvent = viewModel::onEvent,
-            onNavigateBack = onNavigateBack
+            onNavigateBack = onNavigateBack,
+            onShowDeleteDialog = { setShowDeleteDialog(true) }
+        )
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { setShowDeleteDialog(false) },
+            title = { Text(stringResource(R.string.delete_note_title)) },
+            text = { Text(stringResource(R.string.delete_note_message)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.deleteNote(uiState.id)
+                        setShowDeleteDialog(false)
+                        onNavigateBack()
+                    }
+                ) {
+                    Text(stringResource(R.string.delete_button))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { setShowDeleteDialog(false) }
+                ) {
+                    Text(stringResource(R.string.cancel_button))
+                }
+            }
         )
     }
 }
@@ -87,7 +123,8 @@ private fun MobileNoteEditorLayout(
     uiState: NoteEditorUiState,
     cardColor: Color,
     onEvent: (NoteEditorUiEvent) -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onShowDeleteDialog: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -96,35 +133,13 @@ private fun MobileNoteEditorLayout(
             .statusBarsPadding()
     ) {
         // Top bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onNavigateBack) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.back_button),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Text(
-                text = if (uiState.id > 0) stringResource(R.string.edit_note_title) else stringResource(R.string.add_note_title),
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-            Spacer(Modifier.weight(1f))
-            DoneButton(
-                isLoading = uiState.isLoading,
-                enabled = uiState.title.isNotBlank() && uiState.content.isNotBlank(),
-                onClick = { onEvent(NoteEditorUiEvent.Save) }
-            )
-        }
-
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        NoteEditorTopBar(
+            uiState = uiState,
+            onNavigateBack = onNavigateBack,
+            onShowDeleteDialog = onShowDeleteDialog,
+            onEvent = onEvent,
+            isTablet = false
+        )
 
         // Scrollable editor area
         Column(
@@ -184,7 +199,8 @@ private fun TabletNoteEditorLayout(
     uiState: NoteEditorUiState,
     cardColor: Color,
     onEvent: (NoteEditorUiEvent) -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onShowDeleteDialog: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -193,28 +209,14 @@ private fun TabletNoteEditorLayout(
             .statusBarsPadding()
     ) {
         // Top bar
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = if (uiState.id > 0) stringResource(R.string.edit_note_title) else stringResource(R.string.add_note_title),
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(Modifier.weight(1f))
-            DoneButton(
-                isLoading = uiState.isLoading,
-                enabled = uiState.title.isNotBlank() && uiState.content.isNotBlank(),
-                onClick = { onEvent(NoteEditorUiEvent.Save) }
-            )
-        }
-
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        NoteEditorTopBar(
+            uiState = uiState,
+            onNavigateBack = onNavigateBack,
+            onShowDeleteDialog = onShowDeleteDialog,
+            onEvent = onEvent,
+            isTablet = true,
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+        )
 
         // Content area — constrained max width like design (800dp)
         Box(

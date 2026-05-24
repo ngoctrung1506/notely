@@ -93,7 +93,8 @@ fun HomeScreen(
                 showMenuIcon = true,
                 onMenuClick = { scope.launch { drawerState.open() } },
                 onCreateNote = { navController.navigate(Screen.NoteEditor.createRoute()) },
-                onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) }
+                onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) },
+                onDeleteNote = { viewModel.deleteNote(it) }
             )
         }
     } else {
@@ -113,7 +114,8 @@ fun HomeScreen(
                 showMenuIcon = false,
                 onMenuClick = {},
                 onCreateNote = { navController.navigate(Screen.NoteEditor.createRoute()) },
-                onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) }
+                onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) },
+                onDeleteNote = { viewModel.deleteNote(it) }
             )
         }
     }
@@ -127,7 +129,8 @@ private fun HomeMainContent(
     showMenuIcon: Boolean,
     onMenuClick: () -> Unit,
     onCreateNote: () -> Unit,
-    onNoteClick: (Long) -> Unit
+    onNoteClick: (Long) -> Unit,
+    onDeleteNote: (Long) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -175,7 +178,11 @@ private fun HomeMainContent(
                     key = lazyPagingItems.itemKey { it.id }
                 ) { index ->
                     lazyPagingItems[index]?.let { note ->
-                        NoteCard(note = note, onClick = { onNoteClick(note.id) })
+                        NoteCard(
+                            note = note,
+                            onClick = { onNoteClick(note.id) },
+                            onDelete = { onDeleteNote(note.id) }
+                        )
                     }
                 }
 

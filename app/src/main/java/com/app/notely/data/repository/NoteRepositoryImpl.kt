@@ -39,4 +39,8 @@ class NoteRepositoryImpl @Inject constructor(
     override suspend fun updateNote(note: Note) {
         noteDao.updateNote(note.toNoteEntity())
     }
+
+    override suspend fun deleteNote(noteId: Long) {
+        noteDao.deleteNote(noteId)
+    }
 }
