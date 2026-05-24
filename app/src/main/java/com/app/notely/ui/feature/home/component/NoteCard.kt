@@ -1,8 +1,7 @@
 package com.app.notely.ui.feature.home.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,7 +52,8 @@ fun NoteCard(
     val backgroundColor = Color(note.color.toColorInt())
     val showDeleteDialog = remember { mutableStateOf(false) }
     val swipeOffset = remember { mutableStateOf(0f) }
-    val tags = remember(note.tags) { note.tags.mapNotNull { name -> MockTags.all.find { it.name == name } } }
+    val tags =
+        remember(note.tags) { note.tags.mapNotNull { name -> MockTags.all.find { it.name == name } } }
 
     Box(modifier = modifier.fillMaxWidth()) {
         // Delete action background — shown behind the sliding card
@@ -78,18 +78,34 @@ fun NoteCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDrag = { change, dragAmount ->
-                            swipeOffset.value = (swipeOffset.value + dragAmount.x).coerceIn(-150f, 0f)
-                            change.consume()
-                        },
-                        onDragEnd = {
-                            if (swipeOffset.value < -100) {
-                                showDeleteDialog.value = true
+                    awaitEachGesture {
+                        var offset = 0f
+
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            val change = event.changes[0]
+
+                            val dragAmount = change.position.x - change.previousPosition.x
+                            val verticalAmount = change.position.y - change.previousPosition.y
+
+                            // Only handle if horizontal movement is dominant
+                            if (kotlin.math.abs(dragAmount) > kotlin.math.abs(verticalAmount) && kotlin.math.abs(
+                                    dragAmount
+                                ) > 2
+                            ) {
+                                offset = (offset + dragAmount).coerceIn(-150f, 0f)
+                                swipeOffset.value = offset
+                                change.consume()
+                            } else if (change.pressed.not()) {
+                                break
                             }
-                            swipeOffset.value = 0f
                         }
-                    )
+
+                        if (offset < -100) {
+                            showDeleteDialog.value = true
+                        }
+                        swipeOffset.value = 0f
+                    }
                 }
                 .pointerInput(Unit) {
                     detectTapGestures(
@@ -146,7 +162,10 @@ fun NoteCard(
                                         text = tag.name,
                                         style = MaterialTheme.typography.labelSmall,
                                         color = tagColor,
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        )
                                     )
                                 }
                             }
