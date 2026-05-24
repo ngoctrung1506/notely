@@ -46,10 +46,12 @@ import androidx.paging.compose.itemKey
 import com.app.notely.R
 import com.app.notely.core.navigation.Screen
 import com.app.notely.domain.model.Note
+import com.app.notely.domain.model.SyncStatus
 import com.app.notely.ui.component.EmptyView
 import com.app.notely.ui.feature.home.component.HomeDrawerContent
 import com.app.notely.ui.feature.home.component.HomeTopAppBar
 import com.app.notely.ui.feature.home.component.NoteCard
+import com.app.notely.ui.feature.home.component.SyncStatusBar
 import kotlinx.coroutines.launch
 
 enum class HomeNavItem { Home, Tags }
@@ -65,6 +67,8 @@ fun HomeScreen(
     val lazyPagingItems = viewModel.pagedNotes.collectAsLazyPagingItems()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val sortBy by viewModel.sortBy.collectAsState()
+    val syncStatus by viewModel.syncStatus.collectAsState()
+    val isOnline by viewModel.isOnline.collectAsState()
     val columns = when (windowWidthSizeClass) {
         WindowWidthSizeClass.Compact -> 1
         WindowWidthSizeClass.Medium -> 2
@@ -104,7 +108,10 @@ fun HomeScreen(
                 searchQuery = searchQuery,
                 onSearchQueryChanged = { viewModel.onSearchQueryChanged(it) },
                 sortBy = sortBy,
-                onSortByChanged = { viewModel.onSortByChanged(it) }
+                onSortByChanged = { viewModel.onSortByChanged(it) },
+                syncStatus = syncStatus,
+                isOnline = isOnline,
+                onSyncClick = { viewModel.triggerSync() }
             )
         }
     } else {
@@ -134,7 +141,10 @@ fun HomeScreen(
                 searchQuery = searchQuery,
                 onSearchQueryChanged = { viewModel.onSearchQueryChanged(it) },
                 sortBy = sortBy,
-                onSortByChanged = { viewModel.onSortByChanged(it) }
+                onSortByChanged = { viewModel.onSortByChanged(it) },
+                syncStatus = syncStatus,
+                isOnline = isOnline,
+                onSyncClick = { viewModel.triggerSync() }
             )
         }
     }
@@ -153,7 +163,10 @@ private fun HomeMainContent(
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
     sortBy: SortBy,
-    onSortByChanged: (SortBy) -> Unit
+    onSortByChanged: (SortBy) -> Unit,
+    syncStatus: SyncStatus,
+    isOnline: Boolean,
+    onSyncClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -163,7 +176,10 @@ private fun HomeMainContent(
                 searchQuery = searchQuery,
                 onSearchQueryChanged = onSearchQueryChanged,
                 sortBy = sortBy,
-                onSortByChanged = onSortByChanged
+                onSortByChanged = onSortByChanged,
+                syncStatus = syncStatus,
+                isOnline = isOnline,
+                onSyncClick = onSyncClick
             )
         },
         floatingActionButton = {
@@ -200,6 +216,10 @@ private fun HomeMainContent(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    SyncStatusBar(syncStatus = syncStatus)
+                }
+
                 items(
                     count = lazyPagingItems.itemCount,
                     key = lazyPagingItems.itemKey { it.id }

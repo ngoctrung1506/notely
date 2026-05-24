@@ -12,5 +12,7 @@ data class NoteEntity(
     val createdAt: Long,
     val updatedAt: Long,
     val color: String = "#FFFFFF",
-    val tags: String = ""
+    val tags: String = "",
+    val pendingSync: Boolean = true,
+    val isDeleted: Boolean = false
 )

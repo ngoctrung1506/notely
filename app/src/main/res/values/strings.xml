@@ -47,4 +47,12 @@
     <string name="tags_tip_body">Use color-coded tags to visually prioritize your workflow at a single glance.</string>
     <string name="tags_add_label">Add tag…</string>
     <string name="tag_remove">Remove %s</string>
+
+    <!-- Sync -->
+    <string name="sync_button">Sync notes</string>
+    <string name="sync_status_pending">Pending sync</string>
+    <string name="sync_status_syncing">Syncing…</string>
+    <string name="sync_status_last_synced">Last synced: %s</string>
+    <string name="sync_status_error">Sync failed</string>
+    <string name="sync_status_offline_retry">No internet • Retry when online</string>
 </resources>
