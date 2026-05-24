@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Notely</string>
+    
+    <!-- Home Screen -->
+    <string name="home_empty_message">No notes yet. Jot down right now!</string>
+    <string name="home_notes_title">Notes</string>
+    <string name="home_new_note_label">New Note</string>
+    <string name="home_open_menu">Open menu</string>
+    <string name="home_sort_options">Sort options</string>
+    <string name="home_search_placeholder">Search your thoughts...</string>
+
+    <!-- Drawer -->
+    <string name="drawer_home">Home</string>
+    <string name="drawer_tags">Tags</string>
 </resources>

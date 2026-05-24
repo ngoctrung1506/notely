@@ -32,7 +32,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.app.notely.R
 
 enum class SortBy {
     CreatedDate,
@@ -69,7 +71,7 @@ fun HomeTopAppBar(
                 IconButton(onClick = onMenuClick) {
                     Icon(
                         imageVector = Icons.Default.Menu,
-                        contentDescription = "Open menu",
+                        contentDescription = stringResource(R.string.home_open_menu),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }

@@ -13,7 +13,9 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.app.notely.R
 import com.app.notely.ui.feature.home.HomeNavItem
 
 @Composable
@@ -28,21 +30,21 @@ fun HomeDrawerContent(
             .padding(vertical = 8.dp)
     ) {
         Text(
-            text = "Notes",
+            text = stringResource(R.string.home_notes_title),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp)
         )
         NavigationDrawerItem(
             icon = { Icon(Icons.Filled.Home, contentDescription = null) },
-            label = { Text("Home") },
+            label = { Text(stringResource(R.string.drawer_home)) },
             selected = selectedItem == HomeNavItem.Home,
             onClick = { onItemSelected(HomeNavItem.Home) },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
         )
         NavigationDrawerItem(
             icon = { Icon(Icons.Filled.Sell, contentDescription = null) },
-            label = { Text("Tags") },
+            label = { Text(stringResource(R.string.drawer_tags)) },
             selected = selectedItem == HomeNavItem.Tags,
             onClick = { onItemSelected(HomeNavItem.Tags) },
             modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
