@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
@@ -53,12 +54,12 @@ import com.app.notely.ui.feature.home.component.HomeDrawerContent
 import com.app.notely.ui.feature.home.component.HomeTopAppBar
 import com.app.notely.ui.feature.home.component.NoteCard
 import com.app.notely.ui.feature.home.component.SyncStatusBar
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 enum class HomeNavItem { Home, Tags }
 
 
-@Preview(showSystemUi = true)
 @Composable
 fun HomeScreen(
     windowWidthSizeClass: WindowWidthSizeClass,
@@ -84,29 +85,31 @@ fun HomeScreen(
 
     if (isCompact) {
         ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
+            drawerState = drawerState, drawerContent = {
                 ModalDrawerSheet {
                     HomeDrawerContent(
-                        selectedItem = selectedNavItem,
-                        onItemSelected = { item ->
+                        selectedItem = selectedNavItem, onItemSelected = { item ->
                             selectedNavItem = item
                             scope.launch { drawerState.close() }
                             if (item == HomeNavItem.Tags) {
                                 navController.navigate(Screen.Tags.route)
                             }
-                        }
-                    )
+                        })
                 }
-            }
-        ) {
+            }) {
             HomeMainContent(
                 columns = columns,
                 lazyPagingItems = lazyPagingItems,
                 showMenuIcon = true,
                 onMenuClick = { scope.launch { drawerState.open() } },
                 onCreateNote = { navController.navigate(Screen.NoteEditor.createRoute()) },
-                onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) },
+                onNoteClick = { noteId ->
+                    navController.navigate(
+                        Screen.NoteEditor.createRoute(
+                            noteId
+                        )
+                    )
+                },
                 onDeleteNote = { viewModel.deleteNote(it) },
                 searchQuery = searchQuery,
                 onSearchQueryChanged = { viewModel.onSearchQueryChanged(it) },
@@ -114,32 +117,34 @@ fun HomeScreen(
                 onSortByChanged = { viewModel.onSortByChanged(it) },
                 syncStatus = syncStatus,
                 isOnline = isOnline,
-                onSyncClick = { viewModel.triggerSync() }
-            )
+                onSyncClick = { viewModel.triggerSync() })
         }
     } else {
         PermanentNavigationDrawer(
             drawerContent = {
                 PermanentDrawerSheet(modifier = Modifier.width(280.dp)) {
                     HomeDrawerContent(
-                        selectedItem = selectedNavItem,
-                        onItemSelected = { item ->
+                        selectedItem = selectedNavItem, onItemSelected = { item ->
                             selectedNavItem = item
                             if (item == HomeNavItem.Tags) {
                                 navController.navigate(Screen.Tags.route)
                             }
-                        }
-                    )
+                        })
                 }
-            }
-        ) {
+            }) {
             HomeMainContent(
                 columns = columns,
                 lazyPagingItems = lazyPagingItems,
                 showMenuIcon = false,
                 onMenuClick = {},
                 onCreateNote = { navController.navigate(Screen.NoteEditor.createRoute()) },
-                onNoteClick = { noteId -> navController.navigate(Screen.NoteEditor.createRoute(noteId)) },
+                onNoteClick = { noteId ->
+                    navController.navigate(
+                        Screen.NoteEditor.createRoute(
+                            noteId
+                        )
+                    )
+                },
                 onDeleteNote = { viewModel.deleteNote(it) },
                 searchQuery = searchQuery,
                 onSearchQueryChanged = { viewModel.onSearchQueryChanged(it) },
@@ -147,8 +152,7 @@ fun HomeScreen(
                 onSortByChanged = { viewModel.onSortByChanged(it) },
                 syncStatus = syncStatus,
                 isOnline = isOnline,
-                onSyncClick = { viewModel.triggerSync() }
-            )
+                onSyncClick = { viewModel.triggerSync() })
         }
     }
 }
@@ -171,33 +175,33 @@ private fun HomeMainContent(
     isOnline: Boolean,
     onSyncClick: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            HomeTopAppBar(
-                showMenuIcon = showMenuIcon,
-                onMenuClick = onMenuClick,
-                searchQuery = searchQuery,
-                onSearchQueryChanged = onSearchQueryChanged,
-                sortBy = sortBy,
-                onSortByChanged = onSortByChanged,
-                syncStatus = syncStatus,
-                isOnline = isOnline,
-                onSyncClick = onSyncClick
+    Scaffold(topBar = {
+        HomeTopAppBar(
+            showMenuIcon = showMenuIcon,
+            onMenuClick = onMenuClick,
+            searchQuery = searchQuery,
+            onSearchQueryChanged = onSearchQueryChanged,
+            sortBy = sortBy,
+            onSortByChanged = onSortByChanged,
+            syncStatus = syncStatus,
+            isOnline = isOnline,
+            onSyncClick = onSyncClick
+        )
+    }, floatingActionButton = {
+        FloatingActionButton(
+            onClick = onCreateNote,
+            shape = RoundedCornerShape(16.dp),
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        ) {
+            Icon(
+                Icons.Filled.Add,
+                contentDescription = stringResource(R.string.home_new_note_label)
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = onCreateNote,
-                shape = RoundedCornerShape(16.dp),
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.home_new_note_label))
-            }
         }
-    ) { paddingValues ->
-        val isEmptyAndLoaded = lazyPagingItems.itemCount == 0 &&
-                lazyPagingItems.loadState.refresh is LoadState.NotLoading
+    }) { paddingValues ->
+        val isEmptyAndLoaded =
+            lazyPagingItems.itemCount == 0 && lazyPagingItems.loadState.refresh is LoadState.NotLoading
 
         if (isEmptyAndLoaded) {
             EmptyView(
@@ -225,14 +229,12 @@ private fun HomeMainContent(
 
                 items(
                     count = lazyPagingItems.itemCount,
-                    key = lazyPagingItems.itemKey { it.id }
-                ) { index ->
+                    key = lazyPagingItems.itemKey { it.id }) { index ->
                     lazyPagingItems[index]?.let { note ->
                         NoteCard(
                             note = note,
                             onClick = { onNoteClick(note.id) },
-                            onDelete = { onDeleteNote(note.id) }
-                        )
+                            onDelete = { onDeleteNote(note.id) })
                     }
                 }
 
@@ -254,3 +256,47 @@ private fun HomeMainContent(
         }
     }
 }
+
+@Preview(showSystemUi = true)
+@Composable
+fun HomeScreenPreview() {
+    val sampleNotes = listOf(
+        Note(
+            id = 1,
+            title = "Shopping list",
+            content = "Eggs, Milk, Bread",
+            color = "#FFF9C4",
+            createdAt = 1680000000000,
+            updatedAt = 1680000000000,
+            tags = listOf("Personal")
+        ), Note(
+            id = 2,
+            title = "Ideas",
+            content = "App idea: minimal notes",
+            color = "#E0F7FA",
+            createdAt = 1680000000000,
+            updatedAt = 1680000000000,
+            tags = emptyList()
+        )
+    )
+
+    val pagingData = PagingData.from(sampleNotes)
+    val lazyPagingItems = flowOf(pagingData).collectAsLazyPagingItems()
+
+    HomeMainContent(
+        columns = 1,
+        lazyPagingItems = lazyPagingItems,
+        showMenuIcon = true,
+        onMenuClick = {},
+        onCreateNote = {},
+        onNoteClick = { _ -> },
+        onDeleteNote = { _ -> },
+        searchQuery = "",
+        onSearchQueryChanged = {},
+        sortBy = SortBy.UpdatedDate,
+        onSortByChanged = {},
+        syncStatus = SyncStatus.Idle,
+        isOnline = true,
+        onSyncClick = {})
+}
+

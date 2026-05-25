@@ -41,7 +41,6 @@ import com.app.notely.core.util.DateUtil
 import com.app.notely.domain.model.Note
 import com.app.notely.ui.theme.Black
 
-@Preview(showSystemUi = true)
 @Composable
 fun NoteCard(
     note: Note,
@@ -209,5 +208,20 @@ fun NoteCard(
             }
         )
     }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun NoteCardPreview() {
+    val sample = Note(
+        id = 1,
+        title = "Sample Note",
+        content = "This is a sample note used for previewing the NoteCard UI.",
+        color = "#FFEB3B",
+        createdAt = 1680000000000,
+        updatedAt = 1680000000000,
+        tags = listOf("Personal")
+    )
+    NoteCard(note = sample, onClick = {}, onDelete = {})
 }
 

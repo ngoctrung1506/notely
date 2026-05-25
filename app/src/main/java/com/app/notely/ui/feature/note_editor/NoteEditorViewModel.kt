@@ -3,8 +3,8 @@ package com.app.notely.ui.feature.note_editor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.notely.core.util.DateUtil
 import com.app.notely.core.mock.MockTags
+import com.app.notely.core.util.DateUtil
 import com.app.notely.domain.model.Note
 import com.app.notely.domain.repository.NoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -76,13 +76,25 @@ class NoteEditorViewModel @Inject constructor(
                 }
                 _uiState.update { it.copy(tags = newTags) }
             }
+
             is NoteEditorUiEvent.Save -> saveNote()
         }
     }
 
     fun deleteNote(noteId: Long) {
         viewModelScope.launch {
-            noteRepository.deleteNote(noteId)
+            _uiState.update { it.copy(isDeleting = true, error = null) }
+            try {
+                noteRepository.deleteNote(noteId)
+                _uiState.update { it.copy(isDeleting = false, isDeleted = true) }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isDeleting = false,
+                        error = e.message ?: "Delete failed"
+                    )
+                }
+            }
         }
     }
 
@@ -91,32 +103,37 @@ class NoteEditorViewModel @Inject constructor(
         if (state.title.isBlank() && state.content.isBlank()) return
 
         viewModelScope.launch {
-            val now = DateUtil.getCurrentTime()
-            if (isEditMode) {
-                noteRepository.updateNote(
-                    Note(
-                        id = state.id,
-                        title = state.title,
-                        content = state.content,
-                        color = state.color,
-                        createdAt = state.createdAt,
-                        updatedAt = now,
-                        tags = state.tags.map { it.name }
+            _uiState.update { it.copy(isLoading = true, error = null) }
+            try {
+                val now = DateUtil.getCurrentTime()
+                if (isEditMode) {
+                    noteRepository.updateNote(
+                        Note(
+                            id = state.id,
+                            title = state.title,
+                            content = state.content,
+                            color = state.color,
+                            createdAt = state.createdAt,
+                            updatedAt = now,
+                            tags = state.tags.map { it.name }
+                        )
                     )
-                )
-            } else {
-                noteRepository.saveNote(
-                    Note(
-                        title = state.title,
-                        content = state.content,
-                        color = state.color,
-                        createdAt = now,
-                        updatedAt = now,
-                        tags = state.tags.map { it.name }
+                } else {
+                    noteRepository.saveNote(
+                        Note(
+                            title = state.title,
+                            content = state.content,
+                            color = state.color,
+                            createdAt = now,
+                            updatedAt = now,
+                            tags = state.tags.map { it.name }
+                        )
                     )
-                )
+                }
+                _uiState.update { it.copy(isSaved = true, isLoading = false) }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false, error = e.message ?: "Save failed") }
             }
-            _uiState.update { it.copy(isSaved = true) }
         }
     }
 }
