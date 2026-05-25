@@ -36,22 +36,23 @@ app/src/main/java/com/app/notely/
 
 ## 🛠️ Technology Stack
 
-| Technology | Version | Purpose |
-|-----------|---------|---------|
-| **Kotlin** | 2.3.21 | Programming language |
-| **AGP** | 9.0.1 | Android Gradle Plugin |
-| **Gradle** | 9.1.0 | Build system |
-| **Jetpack Compose** | Latest | Modern UI framework |
-| **Material3** | 2024.09.00 | Design system |
-| **Room** | 2.6.1 | Local database (SQLite) |
-| **Hilt** | 2.51 | Dependency injection |
-| **KSP** | 2.3.8 | Kotlin Symbol Processing (annotation processing) |
-| **Navigation Compose** | 2.7.7 | Composable-based navigation |
-| **Coroutines** | Latest | Async programming |
-| **Flow/StateFlow** | Latest | Reactive streams |
-| **DataStore** | 1.0.0 | Preferences storage |
-| **MockK** | 1.13.8 | Mocking library for tests |
-| **Turbine** | 1.0.0 | Flow testing utility |
+| Technology | Purpose |
+|-----------|----------|
+| **Kotlin** | Programming language |
+| **AGP** | Android Gradle Plugin |
+| **Gradle** | Build system |
+| **Jetpack Compose** | Modern UI framework |
+| **Material3** | Design system |
+| **Room** | Local database (SQLite) |
+| **Hilt** | Dependency injection |
+| **KSP** | Kotlin Symbol Processing (annotation processing) |
+| **Navigation Compose** | Composable-based navigation |
+| **Coroutines** | Async programming |
+| **Flow/StateFlow** | Reactive streams |
+| **DataStore** | Preferences storage |
+| **MockK** | Mocking library for tests |
+| **Turbine** | Flow testing utility |
+| **Firebase Firestore** | Cloud synchronization |
 
 ## 🚀 Getting Started
 
@@ -119,24 +120,21 @@ Presentation with MVVM pattern using Jetpack Compose.
 
 ## 🧪 Testing Strategy
 
-The project includes test scaffolding with mocking and Flow testing support:
+**Status**: Testing strategy and test suite are not yet developed. The project has dependencies configured (MockK 1.13.8, Turbine 1.0.0, Coroutines Test) but comprehensive unit and instrumented tests are not implemented.
+
+Once developed, the testing strategy will include:
 
 ### Unit Tests (JUnit 4 + MockK)
-- **ListNoteViewModelTest.kt**: ViewModel unit tests with:
-  - Repository mocking using MockK
-  - StateFlow collection testing with Turbine
-  - Event handling verification
-  
-- **NoteRepositoryImplTest.kt**: Repository tests with:
-  - DAO mocking
-  - Flow emission verification
+- **ViewModels**: Testing state management and event handling with StateFlow collection
+- **Repository Layer**: Testing data access and Flow emission logic
+- **Domain Models**: Testing business logic and model validation
 
 ### Test Framework Details
-- **MockK 1.13.8**: Mocking framework for Kotlin
-- **Turbine 1.0.0**: Flow testing utility for collecting and asserting emissions
-- **Coroutines Test**: `kotlinx-coroutines-test 1.7.3` for dispatcher management
+- **MockK**: Mocking framework for Kotlin dependencies
+- **Turbine**: Flow testing utility for collecting and asserting emissions
+- **Coroutines Test**: Dispatcher management for async testing
 
-### Running Tests
+### Running Tests (Once Implemented)
 ```bash
 # Run unit tests
 ./gradlew :app:testDebugUnitTest
@@ -146,29 +144,6 @@ The project includes test scaffolding with mocking and Flow testing support:
 ```
 
 ## 📦 Build Configuration
-
-### gradle/libs.versions.toml
-Version catalog managing all dependencies:
-```toml
-[versions]
-agp = "9.0.1"
-kotlin = "2.3.21"
-ksp = "2.3.8"
-room = "2.6.1"
-hilt = "2.51"
-composeBom = "2024.09.00"
-
-[libraries]
-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
-
-[plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-```
 
 ### app/build.gradle.kts
 - **Plugins**: android-application, kotlin-compose, kotlin-ksp
@@ -270,16 +245,19 @@ NavHost(navController, Screen.NoteList) {
 
 ## 🎯 Current Features
 
-✅ Note list display (structure in place, UI TBD)
+✅ Note list display with MVVM architecture
 ✅ Local database persistence with Room
 ✅ Reactive updates via Flow/StateFlow
 ✅ Dependency injection with Hilt
-✅ MVVM architecture implemented
-✅ Navigation structure defined
-⏳ Note creation screen (TODO)
-⏳ Note editing screen (TODO)
-⏳ Note detail screen (TODO)
-⏳ UI component styling (TODO)
+✅ Navigation structure with Compose Navigation
+✅ Cloud synchronization with Firebase Firestore
+✅ Responsive UI with Material 3 design
+✅ Note detail, creation, editing, and deletion
+✅ Search notes functionality by title or content
+✅ Sort notes by date, title
+✅ View tags for notes
+
+
 
 ## 🔧 Troubleshooting
 
