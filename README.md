@@ -9,13 +9,16 @@ app/src/main/java/com/app/notely/
 ├── core/
 │   ├── di/                # Hilt Dependency Injection modules
 │   ├── navigation/        # Navigation routes (sealed class) & graph
+│   ├── network/           # Network clients, Retrofit services, API models
 │   ├── util/              # Utility functions (date formatting, constants)
-│   └── extension/         # Compose Modifier extensions (noRippleClickable)
+│   ├── extension/         # Compose Modifier extensions (noRippleClickable)
+│   └── mock/              # Test helpers and mock data providers
 ├── data/
 │   ├── local/
 │   │   ├── dao/           # Room DAO interface with Flow-based CRUD
 │   │   ├── entity/        # Room entity classes (NoteEntity)
 │   │   └── mapper/        # Entity ↔ Domain model conversion
+│   ├── remote/            # Remote API clients, DTOs, and network mappers
 │   └── repository/        # Repository implementation (NoteRepositoryImpl)
 ├── domain/
 │   ├── model/             # Domain model classes (Note)
@@ -82,10 +85,10 @@ app/src/main/java/com/app/notely/
 ## 📁 Layer Architecture
 
 ### Core Layer (`core/`)
-Shared infrastructure: database setup, DI modules, navigation routes, utilities, and extensions.
+Shared infrastructure: dependency injection modules, navigation routes, utilities, extensions, network clients (Retrofit/HTTP), and test helpers/mocks located under `core/mock`.
 
-### Data Layer (`data/`)  
-Data access with Room entities, DAOs, mappers, and repository implementation.
+### Data Layer (`data/`)
+Data access and synchronization: local persistence with Room (entities, DAOs, mappers), plus remote data sources under `data/remote` for API clients, DTOs, and network-to-domain mapping. The `repository` layer mediates between local and remote sources.
 
 ### Domain Layer (`domain/`)
 Business logic and model contracts.
