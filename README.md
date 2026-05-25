@@ -249,15 +249,25 @@ NavHost(navController, Screen.NoteList) {
 ## 🎯 Current Features
 
 ✅ Note list display with MVVM architecture
+
 ✅ Local database persistence with Room
+
 ✅ Reactive updates via Flow/StateFlow
+
 ✅ Dependency injection with Hilt
+
 ✅ Navigation structure with Compose Navigation
+
 ✅ Cloud synchronization with Firebase Firestore
+
 ✅ Responsive UI with Material 3 design
+
 ✅ Note detail, creation, editing, and deletion
+
 ✅ Search notes functionality by title or content
+
 ✅ Sort notes by date, title
+
 ✅ View tags for notes
 
 
