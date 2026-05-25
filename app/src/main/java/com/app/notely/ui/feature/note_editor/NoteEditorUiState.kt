@@ -11,5 +11,7 @@ data class NoteEditorUiState(
     val tags: List<Tag> = emptyList(),
     val isLoading: Boolean = false,
     val isSaved: Boolean = false,
+    val isDeleting: Boolean = false,
+    val isDeleted: Boolean = false,
     val error: String? = null
 )
